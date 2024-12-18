@@ -415,7 +415,7 @@ function populate_stake_card_areas(page)
         local unlocked = true
         local save_data = G.PROFILES[G.SETTINGS.profile].deck_usage[Galdur.run_setup.choices.deck.effect.center.key]  and G.PROFILES[G.SETTINGS.profile].deck_usage[Galdur.run_setup.choices.deck.effect.center.key].wins_by_key or {}
         for _,v in ipairs(G.P_CENTER_POOLS.Stake[count].applied_stakes) do
-            if not G.PROFILES[G.SETTINGS.profile].all_unlocked and not Galdur.config.unlock_all and (not save_data or (save_data and not save_data['stake_'..v])) then
+            if not G.PROFILES[G.SETTINGS.profile].all_unlocked and not Galdur.config.unlock_all and (not save_data or (save_data and not save_data[v])) then
                 unlocked = false
             end
         end
@@ -672,7 +672,7 @@ G.FUNCS.random_stake = function()
         local unlocked = true
         local save_data = G.PROFILES[G.SETTINGS.profile].deck_usage[Galdur.run_setup.choices.deck.effect.center.key]  and G.PROFILES[G.SETTINGS.profile].deck_usage[Galdur.run_setup.choices.deck.effect.center.key].wins_by_key or {}
         for _,v in ipairs(G.P_CENTER_POOLS.Stake[i].applied_stakes) do
-            if not G.PROFILES[G.SETTINGS.profile].all_unlocked and not Galdur.config.unlock_all and (not save_data or (save_data and not save_data['stake_'..v])) then
+            if not G.PROFILES[G.SETTINGS.profile].all_unlocked and not Galdur.config.unlock_all and (not save_data or (save_data and not save_data[v])) then
                 unlocked = false
             end
         end
@@ -1019,7 +1019,7 @@ function create_stake_unlock_message(stake)
     local number_applied_stakes = #stake.applied_stakes
     local string_output = localize('gald_unlock_1')
     for i,v in ipairs(stake.applied_stakes) do
-        string_output = string_output .. localize({type='name_text', set='Stake', key='stake_'..v}) .. (i < number_applied_stakes and localize('gald_unlock_and') or '')
+        string_output = string_output .. localize({type='name_text', set='Stake', key=v}) .. (i < number_applied_stakes and localize('gald_unlock_and') or '')
     end
     local split = split_string_2(string_output)
 
