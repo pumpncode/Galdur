@@ -516,7 +516,7 @@ function G.UIDEF.run_setup_option_new_model(type)
             {n=G.UIT.R, config = {align = "cm", minw = 3, offset = {x=0, y=-5}}, nodes ={
                 {n = G.UIT.C, config={align='cm'}, nodes = {
                     {n=G.UIT.R, config = {id = 'previous_selection', minw = 2.5, minh = 0.8, maxh = 0.8, r = 0.1,
-                        hover = true, ref_value = -1, button = Galdur.run_setup.current_page > 1 and 'deck_select_next' or function() end,
+                        hover = true, ref_value = -1, button = Galdur.run_setup.current_page > 1 and 'deck_select_next' or 'dead_button',
                         colour = Galdur.run_setup.current_page > 1 and G.C.BLUE or G.C.CLEAR, align = "cm",
                         emboss = Galdur.run_setup.current_page > 1 and 0.1 or 0},
                         nodes = {
@@ -566,6 +566,9 @@ function G.UIDEF.run_setup_option_new_model(type)
     return t
 end
 
+G.FUNCS.dead_button = function()
+end
+
 G.FUNCS.deck_select_next = function(e)
     for _, clean_up in pairs(Galdur.clean_up_functions) do
         clean_up()
@@ -595,7 +598,7 @@ G.FUNCS.deck_select_next = function(e)
     next_button.config.colour = Galdur.run_setup.current_page == #Galdur.run_setup.pages and HEX('00be67') or G.C.BLUE
 
     local prev_button = e.UIBox:get_UIE_by_ID('previous_selection')
-    prev_button.config.button = Galdur.run_setup.current_page > 1 and 'deck_select_next' or nil
+    prev_button.config.button = Galdur.run_setup.current_page > 1 and 'deck_select_next' or 'dead_button'
     prev_button.config.emboss = Galdur.run_setup.current_page > 1 and 0.1 or 0
     prev_button.config.hover = Galdur.run_setup.current_page > 1 and true or false
     prev_button.config.colour = Galdur.run_setup.current_page > 1 and G.C.BLUE or G.C.CLEAR
