@@ -1,13 +1,3 @@
---- STEAMODDED HEADER
---- MOD_NAME: Galdur
---- MOD_ID: galdur
---- PREFIX: galdur
---- MOD_AUTHOR: [Eremel_]
---- MOD_DESCRIPTION: A modification to the run setup screen to ease use.
---- BADGE_COLOUR: 3FC7EB
---- PRIORITY: -10000
---- VERSION: 1.1.4
---- DEPENDENCIES: [Steamodded>=1.0.0~ALPHA-0813a]
 
 -- Definitions
 Galdur = SMODS.current_mod
