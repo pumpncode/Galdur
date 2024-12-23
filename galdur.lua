@@ -256,6 +256,7 @@ function populate_deck_card_areas(page)
                 {galdur_back = Back(G.P_CENTER_POOLS.Back[count]), deck_select = i})
             card.sprite_facing = 'back'
             card.facing = 'back'
+            card.children.back:remove()
             card.children.back = Sprite(card.T.x, card.T.y, card.T.w, card.T.h, G.ASSET_ATLAS[G.P_CENTER_POOLS.Back[count].unlocked and G.P_CENTER_POOLS.Back[count].atlas or 'centers'], G.P_CENTER_POOLS.Back[count].unlocked and G.P_CENTER_POOLS.Back[count].pos or {x = 4, y = 0})
             card.children.back.states.hover = card.states.hover
             card.children.back.states.click = card.states.click
@@ -289,7 +290,7 @@ end
 
 function Galdur.clean_up_functions.clean_deck_areas()
     if not Galdur.run_setup.deck_select_areas then return end
-    for j = 1, #Galdur.run_setup.deck_select_areas do
+    for j = #Galdur.run_setup.deck_select_areas, 1, -1 do
         if Galdur.run_setup.deck_select_areas[j].cards then
             remove_all(Galdur.run_setup.deck_select_areas[j].cards)
             Galdur.run_setup.deck_select_areas[j].cards = {}
@@ -415,6 +416,7 @@ function populate_stake_card_areas(page)
         end
         if not unlocked then
             card.params.stake_chip_locked = true
+            card.children.back:remove()
             card.children.back = Sprite(card.T.x, card.T.y, 3.4*14/41, 3.4*14/41,G.ASSET_ATLAS['galdur_locked_stake'], {x=0,y=0})
         end
         card.children.back.states.hover = card.states.hover
@@ -880,6 +882,7 @@ function Galdur.populate_deck_preview(_deck, silent)
         if Galdur.config.animation and not silent then Galdur.run_setup.selected_deck_area_holding:emplace(card) end
         card.sprite_facing = 'back'
         card.facing = 'back'
+        card.children.back:remove()
         card.children.back = Sprite(card.T.x, card.T.y, card.T.w, card.T.h, G.ASSET_ATLAS[_deck.effect.center.atlas or 'centers'], _deck.effect.center.pos)
         card.children.back.states.hover = card.states.hover
         card.children.back.states.click = card.states.click
@@ -939,6 +942,7 @@ function Galdur.populate_chip_tower(_stake, silent)
         if Galdur.config.animation and not silent then Galdur.run_setup.chip_tower_holding:emplace(card) end
         card.facing = 'back'
         card.sprite_facing = 'back'
+        card.children.back:remove()
         card.children.back = get_stake_sprite_in_area(stake_index, 3.4*14/41, Galdur.run_setup.chip_tower)
         card.children.back.won = true
         card.children.back.states.hover = card.states.hover
