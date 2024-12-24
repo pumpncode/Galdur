@@ -235,7 +235,7 @@ function generate_deck_card_areas_ui()
         local row = {n = G.UIT.R, config = {colour = G.C.LIGHT}, nodes = {}}
         for j=1, 6 do
             if count > #G.P_CENTER_POOLS.Back then return end
-            table.insert(row.nodes, {n = G.UIT.O, config = {object = Galdur.run_setup.deck_select_areas[count], r = 0.1, id = "deck_select_"..count}})
+            table.insert(row.nodes, {n = G.UIT.O, config = {object = Galdur.run_setup.deck_select_areas[count], r = 0.1, id = "deck_select_"..count, focus_args = { snap_to = true },}})
             count = count + 1
         end
         table.insert(deck_ui_element, row)
@@ -309,7 +309,6 @@ function create_deck_page_cycle()
         cycle = create_option_cycle({
             options = options,
             w = 4.5,
-            cycle_shoulders = true,
             opt_callback = 'change_deck_page',
             focus_args = { snap_to = true, nav = 'wide' },
             current_option = 1,
@@ -350,7 +349,7 @@ function generate_stake_card_areas_ui()
     for i=1, 3 do
         local row = {n = G.UIT.R, config = {colour = G.C.LIGHT, padding = 0.1}, nodes = {}}
         for j=1, 8 do
-            table.insert(row.nodes, {n = G.UIT.O, config = {object = Galdur.run_setup.stake_select_areas[count], r = 0.1, id = "stake_select_"..count, outline_colour = G.C.YELLOW}})
+            table.insert(row.nodes, {n = G.UIT.O, config = {object = Galdur.run_setup.stake_select_areas[count], r = 0.1, id = "stake_select_"..count,  count = count, outline_colour = G.C.YELLOW, focus_args = { snap_to = true }}})
             count = count + 1
         end
         table.insert(stake_ui_element, row)
@@ -448,7 +447,6 @@ function create_stake_page_cycle()
     local cycle = create_option_cycle({
         options = options,
         w = 4.5,
-        cycle_shoulders = true,
         opt_callback = 'change_stake_page',
         focus_args = { snap_to = true, nav = 'wide' },
         current_option = 1,
@@ -517,12 +515,13 @@ function G.UIDEF.run_setup_option_new_model(type)
             }},
             {n=G.UIT.R, config = {align = "cm", minw = 3, offset = {x=0, y=-5}}, nodes ={
                 {n = G.UIT.C, config={align='cm'}, nodes = {
-                    {n=G.UIT.R, config = {id = 'previous_selection', minw = 2.5, minh = 0.8, maxh = 0.8, r = 0.1,
+                    {n=G.UIT.C, config = {id = 'previous_selection', minw = 2.5, minh = 0.8, maxh = 0.8, r = 0.1,
                         hover = true, ref_value = -1, button = Galdur.run_setup.current_page > 1 and 'deck_select_next' or 'dead_button',
                         colour = Galdur.run_setup.current_page > 1 and G.C.BLUE or G.C.CLEAR, align = "cm",
                         emboss = Galdur.run_setup.current_page > 1 and 0.1 or 0},
                         nodes = {
-                            {n=G.UIT.T, config={ref_table = Galdur.run_setup.pages, ref_value = 'prev_button', scale = 0.4, colour = G.C.WHITE}},
+                            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.T, config={ref_table = Galdur.run_setup.pages, ref_value = 'prev_button', scale = 0.4, colour = G.C.WHITE}}}},
+                            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.C, config={func = 'set_button_pip_prev', focus_args = { button = 'triggerleft', set_button_pip = true, offset = {x=-0.2, y = 0.3} }}}}}
                     }}
                 }},
                 {n=G.UIT.C, config={align = "cm", padding = 0.05, minh = 0.9, minw = 6.6}, nodes={
@@ -551,21 +550,34 @@ function G.UIDEF.run_setup_option_new_model(type)
                         ref_table = G, ref_value = 'run_zen_mode', active_colour = G.C.BLUE} or nil}}
                 }},
                 {n = G.UIT.C, config={align='cm'}, nodes = {
-                    {n=G.UIT.R, config = {id = 'next_selection', minw = 2.5, minh = 0.8, maxh = 0.8, r = 0.1, hover = true, ref_value = 1,
+                    {n=G.UIT.C, config = {id = 'next_selection', minw = 2.5, minh = 0.8, maxh = 0.8, r = 0.1, hover = true, ref_value = 1,
                         button = 'deck_select_next', colour = G.C.BLUE,
                         align = "cm", emboss = 0.1}, nodes = {
-                            {n=G.UIT.T, config={ref_table = Galdur.run_setup.pages, ref_value = 'next_button', scale = 0.4, colour = G.C.WHITE}},
+                            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.T, config={ref_table = Galdur.run_setup.pages, ref_value = 'next_button', scale = 0.4, colour = G.C.WHITE}}}},
+                            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.C, config={func = 'set_button_pip', focus_args = { button = 'x', set_button_pip = true, offset = {x=-0.2, y = 0.3} }}}}}
                     }}
                 }},
                 {n=G.UIT.C, config={minw = 0.5}},
                 {n = G.UIT.C, config={align='cm'}, nodes = {{n=G.UIT.R, config = {maxw = 2.5, minw = 2.5, minh = 0.8, r = 0.1, hover = true, ref_value = 1,
                     button = 'quick_start', colour = G.C.ORANGE, align = "cm", emboss = 0.1, tooltip = {text = quick_select_text} }, nodes = {
-                        {n=G.UIT.T, config={text = localize('gald_quick_start'), scale = 0.4, colour = G.C.WHITE}}
+                        {n = G.UIT.C, config = {align = 'cm'} , nodes = {
+                            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.T, config={text = localize('gald_quick_start'), scale = 0.4, colour = G.C.WHITE}},}},
+                            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.C, config={func = 'set_button_pip', focus_args = { button = 'y', set_button_pip = true, offset = {x=-0.2, y = 0.3} }}}}}
+                        }}
                 }}}}
             }}
         }}
     }}
     return t
+end
+
+G.FUNCS.set_button_pip_prev = function(e)
+    if Galdur.run_setup.current_page > 1 then
+        G.FUNCS.set_button_pip(e)
+    elseif e.children.button_pip then
+        e.children.button_pip:remove()
+        e.children.button_pip = nil
+    end
 end
 
 G.FUNCS.dead_button = function()
@@ -695,8 +707,9 @@ function deck_select_page_deck()
 
     local deck_preview = Galdur.display_deck_preview()
     deck_preview.nodes[#deck_preview.nodes+1] = {n = G.UIT.R, config={align = 'cm', padding = 0.15}, nodes = {
-        {n=G.UIT.R, config = {maxw = 2.5, minw = 2.5, minh = 0.8, r = 0.1, hover = true, ref_value = 1, button = 'random_deck', colour = Galdur.badge_colour, align = "cm", emboss = 0.1}, nodes = {
-            {n=G.UIT.T, config={text = "Random Deck", scale = 0.4, colour = G.C.WHITE}}
+        {n=G.UIT.C, config = {maxw = 2.5, minw = 2.5, minh = 0.8, r = 0.1, hover = true, ref_value = 1, button = 'random_deck', colour = Galdur.badge_colour, align = "cm", emboss = 0.1}, nodes = {
+            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.T, config={text = "Random Deck", scale = 0.4, colour = G.C.WHITE}}}},
+            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.C, config={func = 'set_button_pip', focus_args = { button = 'triggerright', set_button_pip = true, offset = {x=-0.2, y = 0.3} }}}}}            
         }}
     }}
 
@@ -725,8 +738,9 @@ function deck_select_page_stake()
 
     local deck_preview = Galdur.display_deck_preview()
     deck_preview.nodes[#deck_preview.nodes+1] = {n = G.UIT.R, config={align = 'cm', padding = 0.15}, nodes = {
-        {n=G.UIT.R, config = {maxw = 2.5, minw = 2.5, minh = 0.8, r = 0.1, hover = true, ref_value = 1, button = 'random_stake', colour = Galdur.badge_colour, align = "cm", emboss = 0.1}, nodes = {
-            {n=G.UIT.T, config={text = "Random Stake", scale = 0.4, colour = G.C.WHITE}}
+        {n=G.UIT.C, config = {maxw = 2.5, minw = 2.5, minh = 0.8, r = 0.1, hover = true, ref_value = 1, button = 'random_stake', colour = Galdur.badge_colour, align = "cm", emboss = 0.1}, nodes = {
+            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.T, config={text = "Random Stake", scale = 0.4, colour = G.C.WHITE}}}},
+            {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.C, config={func = 'set_button_pip', focus_args = { button = 'triggerright', set_button_pip = true, offset = {x=-0.2, y = 0.3} }}}}}            
         }}
     }}
 
