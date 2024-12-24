@@ -346,7 +346,8 @@ end
 function generate_stake_card_areas_ui()
     local stake_ui_element = {}
     local count = 1
-    for i=1, 3 do
+    local min_rows = math.ceil(#G.P_CENTER_POOLS.Stake / 8)
+    for i=1, math.min(3, min_rows) do
         local row = {n = G.UIT.R, config = {colour = G.C.LIGHT, padding = 0.1}, nodes = {}}
         for j=1, 8 do
             table.insert(row.nodes, {n = G.UIT.O, config = {object = Galdur.run_setup.stake_select_areas[count], r = 0.1, id = "stake_select_"..count,  count = count, outline_colour = G.C.YELLOW, focus_args = { snap_to = true }}})
@@ -378,6 +379,7 @@ function get_stake_sprite_in_area(_stake, _scale, _area)
                     Sprite.draw_shader(_sprite, 'voucher', nil, _sprite.ARGS.send_to_shader)
                 else
                     Sprite.draw_self(_sprite, G.C.L_BLACK) 
+                    Sprite.draw_shader(_sprite, 'negative_shine', nil, _sprite.ARGS.send_to_shader)
                 end
             else
                 if Galdur.config.stake_colour == 2 then
@@ -385,6 +387,7 @@ function get_stake_sprite_in_area(_stake, _scale, _area)
                     Sprite.draw_shader(_sprite, 'voucher', nil, _sprite.ARGS.send_to_shader)
                 else
                     Sprite.draw_self(_sprite, G.C.L_BLACK) 
+                    Sprite.draw_shader(_sprite, 'negative_shine', nil, _sprite.ARGS.send_to_shader)
                 end
             end
         end
