@@ -1033,7 +1033,7 @@ function create_stake_unlock_message(stake)
     local number_applied_stakes = #stake.applied_stakes
     local string_output = localize('gald_unlock_1')
     for i,v in ipairs(stake.applied_stakes) do
-        string_output = string_output .. localize({type='name_text', set='Stake', key=v}) .. (i < number_applied_stakes and localize('gald_unlock_and') or '')
+        string_output = string_output .. localize({type='name_text', set='Stake', key='stake_'..v}) .. (i < number_applied_stakes and localize('gald_unlock_and') or '')
     end
     local split = split_string_2(string_output)
 
