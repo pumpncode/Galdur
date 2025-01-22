@@ -40,6 +40,8 @@ return {
             },
             ["gald_select_deck"] = "Select Deck",
             ["gald_select_stake"] = "Select Stake",
+	    ["gald_random_deck"] = "Random Deck",
+	    ["gald_random_stake"] = "Random Stake",
             ["gald_play"] = "Play",
             ["gald_selected"] = "SELECTED",
             ["gald_locked"] = "Locked",
