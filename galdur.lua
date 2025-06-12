@@ -31,6 +31,12 @@ SMODS.Atlas({ -- art by nekojoe
     py = 29
 })
 
+SMODS.Atlas({
+    key = 'modicon',
+    path = 'galdur_icon.png',
+    px = '32',
+    py = '32'
+})
 
 -- Function Hooks
 local card_stop_hover = Card.stop_hover
