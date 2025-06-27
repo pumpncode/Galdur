@@ -498,6 +498,7 @@ function G.UIDEF.run_setup_option_new_model(type)
         if G.SAVED_GAME ~= nil then G.SAVED_GAME = STR_UNPACK(G.SAVED_GAME) end
     end
   
+    Galdur.prepare_run_setup()
     G.SETTINGS.current_setup = type
     
     local seed_unlocker_present = (SMODS.Mods['SeedUnlocker'] or {}).can_load
