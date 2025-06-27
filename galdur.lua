@@ -32,6 +32,8 @@ SMODS.Atlas({ -- art by nekojoe
     py = 29
 })
 
+assert(SMODS.load_file('utils/EremelUtility.lua'))()
+
 SMODS.Atlas({
     key = 'modicon',
     path = 'galdur_icon.png',
@@ -313,22 +315,29 @@ function create_deck_page_cycle()
         for i=1, total_pages do
             table.insert(options, localize('k_page')..' '..i..' / '..total_pages)
         end
-        cycle = create_option_cycle({
-            options = options,
-            w = 4.5,
-            opt_callback = 'change_deck_page',
-            focus_args = { snap_to = true, nav = 'wide' },
-            current_option = 1,
-            colour = G.C.RED,
-            no_pips = true
+        cycle = EremelUtility.page_cycler({
+            object_table = G.P_CENTER_POOLS.Back,
+            page_size = 12,
+            key = 'deck_select_cyle',
+            switch_func = G.FUNCS.change_deck_page,
+            h = 1
         })
+        -- cycle = create_option_cycle({
+        --     options = options,
+        --     w = 4.5,
+        --     opt_callback = 'change_deck_page',
+        --     focus_args = { snap_to = true, nav = 'wide' },
+        --     current_option = 1,
+        --     colour = G.C.RED,
+        --     no_pips = true
+        -- })
     end
     return {n = G.UIT.R, config = {align = "cm"}, nodes = {cycle}}
 end
 
 G.FUNCS.change_deck_page = function(args)
     Galdur.clean_up_functions.clean_deck_areas()
-    populate_deck_card_areas(args.cycle_config.current_option)
+    populate_deck_card_areas(args.to)
 end
 
 -- Stake Selection Functions
@@ -454,14 +463,21 @@ function create_stake_page_cycle()
     for i=1, total_pages do
         table.insert(options, localize('k_page')..' '..i..' / '..total_pages)
     end
-    local cycle = create_option_cycle({
-        options = options,
-        w = 4.5,
-        opt_callback = 'change_stake_page',
-        focus_args = { snap_to = true, nav = 'wide' },
-        current_option = 1,
-        colour = G.C.RED,
-        no_pips = true
+    -- local cycle = create_option_cycle({
+    --     options = options,
+    --     w = 4.5,
+    --     opt_callback = 'change_stake_page',
+    --     focus_args = { snap_to = true, nav = 'wide' },
+    --     current_option = 1,
+    --     colour = G.C.RED,
+    --     no_pips = true
+    -- })
+    local cycle = EremelUtility.page_cycler({
+        object_table = G.P_CENTER_POOLS.Stake,
+        page_size = 24,
+        key = 'stake_cycler',
+        switch_func = G.FUNCS.change_stake_page,
+        h = 1
     })
     
     return {n = G.UIT.R, config = {align = "cm"}, nodes = {cycle}}
@@ -469,7 +485,7 @@ end
 
 G.FUNCS.change_stake_page = function(args)
     Galdur.clean_up_functions.clean_stake_areas()
-    populate_stake_card_areas(args.cycle_config.current_option)
+    populate_stake_card_areas(args.to)
 end
 
 -- Main Select Functions
