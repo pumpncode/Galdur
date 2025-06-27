@@ -148,3 +148,11 @@ function EremelUtility.create_toggle(args)
     end
     return t
 end
+
+function table.size(table)
+    local size = 0
+    for _,_ in pairs(table) do
+        size = size + 1
+    end
+    return size
+end
