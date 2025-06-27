@@ -23,7 +23,7 @@ function EremelUtility.page_cycler(args)
     args = args or {}
     args.left = args.left or '<'
     args.right = args.right or '>'
-    args.colour = args.colour or Malverk.badge_colour
+    args.colour = args.colour or HEX('3FC7EB')
     args.button_colour = args.button_colour or G.C.WHITE
     args.button = args.button or 'eremel_default'
     args.switch_func = args.switch_func
@@ -81,7 +81,7 @@ end
 
 function EremelUtility.create_toggle(args)
     args = args or {}
-    args.active_colour = args.active_colour or Malverk.badge_colour
+    args.active_colour = args.active_colour or HEX('3FC7EB')
     args.inactive_colour = args.inactive_colour or G.C.BLACK
     args.w = args.w or 3
     args.h = args.h or 0.5
