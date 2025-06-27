@@ -7,7 +7,8 @@ Galdur.run_setup = {
     choices = {
         deck = nil,
         stake = nil,
-        seed = ""
+        seed = nil,
+        seed_temp = ''
     },
     deck_select_areas = {},
     current_page = 1,
@@ -472,6 +473,16 @@ G.FUNCS.change_stake_page = function(args)
 end
 
 -- Main Select Functions
+function Galdur.prepare_run_setup()
+    Galdur.run_setup.choices.deck = Back(get_deck_from_name(G.PROFILES[G.SETTINGS.profile].MEMORY.deck))
+    G.PROFILES[G.SETTINGS.profile].MEMORY.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake or 1
+    Galdur.run_setup.choices.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake
+    if Galdur.run_setup.choices.stake > #G.P_CENTER_POOLS.Stake then Galdur.run_setup.choices.stake = 1 end
+    Galdur.quick_start.deck = Galdur.run_setup.choices.deck
+    Galdur.quick_start.stake = Galdur.run_setup.choices.stake
+    Galdur.run_setup.choices.seed = nil
+end
+
 function G.UIDEF.run_setup_option_new_model(type)
      for _, args in ipairs(Galdur.pages_to_add) do
         if not args.definition or localize(args.name) == "ERROR" then
@@ -488,13 +499,7 @@ function G.UIDEF.run_setup_option_new_model(type)
     end
   
     G.SETTINGS.current_setup = type
-    Galdur.run_setup.choices.deck = Back(get_deck_from_name(G.PROFILES[G.SETTINGS.profile].MEMORY.deck))
-    G.PROFILES[G.SETTINGS.profile].MEMORY.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake or 1
-    Galdur.run_setup.choices.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake
-    if Galdur.run_setup.choices.stake > #G.P_CENTER_POOLS.Stake then Galdur.run_setup.choices.stake = 1 end
-    Galdur.quick_start.deck = Galdur.run_setup.choices.deck
-    Galdur.quick_start.stake = Galdur.run_setup.choices.stake
-    Galdur.run_setup.choices.seed = ''
+    
     local seed_unlocker_present = (SMODS.Mods['SeedUnlocker'] or {}).can_load
     
     
@@ -542,8 +547,8 @@ function G.UIDEF.run_setup_option_new_model(type)
                           {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={
                             {n=G.UIT.C, config={maxw = 3.1}, nodes = {
                                 seed_unlocker_present and
-                                create_text_input({max_length = 2500, extended_corpus = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed', prompt_text = localize('k_enter_seed')})
-                             or create_text_input({max_length = 8, all_caps = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed', prompt_text = localize('k_enter_seed')}),
+                                create_text_input({max_length = 2500, extended_corpus = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed_temp', prompt_text = localize('k_enter_seed')})
+                             or create_text_input({max_length = 8, all_caps = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed_temp', prompt_text = localize('k_enter_seed')}),
                             }},
                             {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={}},
                             UIBox_button({label = localize('ml_paste_seed'),minw = 1, minh = 0.6, button = 'paste_seed', colour = G.C.BLUE, scale = 0.3, col = true})
@@ -638,7 +643,11 @@ G.FUNCS.deck_select_next = function(e)
 end
 
 function Galdur.start_run(_quick_start)
-    if not Galdur.run_setup.choices.seed_select or Galdur.run_setup.choices.seed == '' then Galdur.run_setup.choices.seed = nil end
+    if not Galdur.run_setup.choices.seed_select or Galdur.run_setup.choices.seed == '' then
+        Galdur.run_setup.choices.seed = nil 
+    else
+        Galdur.run_setup.choices.seed = Galdur.run_setup.choices.seed_temp
+    end
     if _quick_start then
         Galdur.run_setup.choices.deck = Galdur.quick_start.deck
         Galdur.run_setup.choices.stake = Galdur.quick_start.stake
@@ -1083,8 +1092,8 @@ function G.FUNCS.toggle_seeded_run_galdur(bool, e)
           {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={
             {n=G.UIT.C, config={maxw = 3.1}, nodes = {
                 seed_unlocker_present and
-                create_text_input({max_length = 2500, extended_corpus = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed', prompt_text = localize('k_enter_seed')})
-             or create_text_input({max_length = 8, all_caps = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed', prompt_text = localize('k_enter_seed')}),
+                create_text_input({max_length = 2500, extended_corpus = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed_temp', prompt_text = localize('k_enter_seed')})
+             or create_text_input({max_length = 8, all_caps = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed_temp', prompt_text = localize('k_enter_seed')}),
             }},
             {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={}},
             UIBox_button({label = localize('ml_paste_seed'),minw = 1, minh = 0.6, button = 'paste_seed', colour = G.C.BLUE, scale = 0.3, col = true})
