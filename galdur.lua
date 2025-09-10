@@ -7,7 +7,8 @@ Galdur.run_setup = {
     choices = {
         deck = nil,
         stake = nil,
-        seed = ""
+        seed = nil,
+        seed_temp = ''
     },
     deck_select_areas = {},
     current_page = 1,
@@ -30,6 +31,8 @@ SMODS.Atlas({ -- art by nekojoe
     px = 29,
     py = 29
 })
+
+assert(SMODS.load_file('utils/EremelUtility.lua'))()
 
 SMODS.Atlas({
     key = 'modicon',
@@ -312,22 +315,29 @@ function create_deck_page_cycle()
         for i=1, total_pages do
             table.insert(options, localize('k_page')..' '..i..' / '..total_pages)
         end
-        cycle = create_option_cycle({
-            options = options,
-            w = 4.5,
-            opt_callback = 'change_deck_page',
-            focus_args = { snap_to = true, nav = 'wide' },
-            current_option = 1,
-            colour = G.C.RED,
-            no_pips = true
+        cycle = EremelUtility.page_cycler({
+            object_table = G.P_CENTER_POOLS.Back,
+            page_size = 12,
+            key = 'deck_select_cyle',
+            switch_func = G.FUNCS.change_deck_page,
+            h = 1
         })
+        -- cycle = create_option_cycle({
+        --     options = options,
+        --     w = 4.5,
+        --     opt_callback = 'change_deck_page',
+        --     focus_args = { snap_to = true, nav = 'wide' },
+        --     current_option = 1,
+        --     colour = G.C.RED,
+        --     no_pips = true
+        -- })
     end
     return {n = G.UIT.R, config = {align = "cm"}, nodes = {cycle}}
 end
 
 G.FUNCS.change_deck_page = function(args)
     Galdur.clean_up_functions.clean_deck_areas()
-    populate_deck_card_areas(args.cycle_config.current_option)
+    populate_deck_card_areas(args.to)
 end
 
 -- Stake Selection Functions
@@ -453,14 +463,21 @@ function create_stake_page_cycle()
     for i=1, total_pages do
         table.insert(options, localize('k_page')..' '..i..' / '..total_pages)
     end
-    local cycle = create_option_cycle({
-        options = options,
-        w = 4.5,
-        opt_callback = 'change_stake_page',
-        focus_args = { snap_to = true, nav = 'wide' },
-        current_option = 1,
-        colour = G.C.RED,
-        no_pips = true
+    -- local cycle = create_option_cycle({
+    --     options = options,
+    --     w = 4.5,
+    --     opt_callback = 'change_stake_page',
+    --     focus_args = { snap_to = true, nav = 'wide' },
+    --     current_option = 1,
+    --     colour = G.C.RED,
+    --     no_pips = true
+    -- })
+    local cycle = EremelUtility.page_cycler({
+        object_table = G.P_CENTER_POOLS.Stake,
+        page_size = 24,
+        key = 'stake_cycler',
+        switch_func = G.FUNCS.change_stake_page,
+        h = 1
     })
     
     return {n = G.UIT.R, config = {align = "cm"}, nodes = {cycle}}
@@ -468,10 +485,20 @@ end
 
 G.FUNCS.change_stake_page = function(args)
     Galdur.clean_up_functions.clean_stake_areas()
-    populate_stake_card_areas(args.cycle_config.current_option)
+    populate_stake_card_areas(args.to)
 end
 
 -- Main Select Functions
+function Galdur.prepare_run_setup()
+    Galdur.run_setup.choices.deck = Back(get_deck_from_name(G.PROFILES[G.SETTINGS.profile].MEMORY.deck))
+    G.PROFILES[G.SETTINGS.profile].MEMORY.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake or 1
+    Galdur.run_setup.choices.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake
+    if Galdur.run_setup.choices.stake > #G.P_CENTER_POOLS.Stake then Galdur.run_setup.choices.stake = 1 end
+    Galdur.quick_start.deck = Galdur.run_setup.choices.deck
+    Galdur.quick_start.stake = Galdur.run_setup.choices.stake
+    Galdur.run_setup.choices.seed = nil
+end
+
 function G.UIDEF.run_setup_option_new_model(type)
      for _, args in ipairs(Galdur.pages_to_add) do
         if not args.definition or localize(args.name) == "ERROR" then
@@ -487,14 +514,9 @@ function G.UIDEF.run_setup_option_new_model(type)
         if G.SAVED_GAME ~= nil then G.SAVED_GAME = STR_UNPACK(G.SAVED_GAME) end
     end
   
+    Galdur.prepare_run_setup()
     G.SETTINGS.current_setup = type
-    Galdur.run_setup.choices.deck = Back(get_deck_from_name(G.PROFILES[G.SETTINGS.profile].MEMORY.deck))
-    G.PROFILES[G.SETTINGS.profile].MEMORY.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake or 1
-    Galdur.run_setup.choices.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake
-    if Galdur.run_setup.choices.stake > #G.P_CENTER_POOLS.Stake then Galdur.run_setup.choices.stake = 1 end
-    Galdur.quick_start.deck = Galdur.run_setup.choices.deck
-    Galdur.quick_start.stake = Galdur.run_setup.choices.stake
-    Galdur.run_setup.choices.seed = ''
+    
     local seed_unlocker_present = (SMODS.Mods['SeedUnlocker'] or {}).can_load
     
     
@@ -542,8 +564,8 @@ function G.UIDEF.run_setup_option_new_model(type)
                           {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={
                             {n=G.UIT.C, config={maxw = 3.1}, nodes = {
                                 seed_unlocker_present and
-                                create_text_input({max_length = 2500, extended_corpus = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed', prompt_text = localize('k_enter_seed')})
-                             or create_text_input({max_length = 8, all_caps = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed', prompt_text = localize('k_enter_seed')}),
+                                create_text_input({max_length = 2500, extended_corpus = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed_temp', prompt_text = localize('k_enter_seed')})
+                             or create_text_input({max_length = 8, all_caps = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed_temp', prompt_text = localize('k_enter_seed')}),
                             }},
                             {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={}},
                             UIBox_button({label = localize('ml_paste_seed'),minw = 1, minh = 0.6, button = 'paste_seed', colour = G.C.BLUE, scale = 0.3, col = true})
@@ -638,7 +660,11 @@ G.FUNCS.deck_select_next = function(e)
 end
 
 function Galdur.start_run(_quick_start)
-    if not Galdur.run_setup.choices.seed_select or Galdur.run_setup.choices.seed == '' then Galdur.run_setup.choices.seed = nil end
+    if not Galdur.run_setup.choices.seed_select or Galdur.run_setup.choices.seed == '' then
+        Galdur.run_setup.choices.seed = nil 
+    else
+        Galdur.run_setup.choices.seed = Galdur.run_setup.choices.seed_temp
+    end
     if _quick_start then
         Galdur.run_setup.choices.deck = Galdur.quick_start.deck
         Galdur.run_setup.choices.stake = Galdur.quick_start.stake
@@ -1083,8 +1109,8 @@ function G.FUNCS.toggle_seeded_run_galdur(bool, e)
           {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={
             {n=G.UIT.C, config={maxw = 3.1}, nodes = {
                 seed_unlocker_present and
-                create_text_input({max_length = 2500, extended_corpus = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed', prompt_text = localize('k_enter_seed')})
-             or create_text_input({max_length = 8, all_caps = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed', prompt_text = localize('k_enter_seed')}),
+                create_text_input({max_length = 2500, extended_corpus = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed_temp', prompt_text = localize('k_enter_seed')})
+             or create_text_input({max_length = 8, all_caps = true, ref_table = Galdur.run_setup.choices, ref_value = 'seed_temp', prompt_text = localize('k_enter_seed')}),
             }},
             {n=G.UIT.C, config={align = "cm", minw = 0.1}, nodes={}},
             UIBox_button({label = localize('ml_paste_seed'),minw = 1, minh = 0.6, button = 'paste_seed', colour = G.C.BLUE, scale = 0.3, col = true})
